@@ -3,320 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Tracks - Professional Shipping Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Smart Tracks - Professional Shipping Intelligence</title>
+    <script src="https://js.17track.net/v5.5/js/external-call.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .glass-effect {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(59, 130, 246, 0.2),
+                0 0 60px rgba(59, 130, 246, 0.3);
+            overflow: hidden;
+            animation: glowPulse 3s ease-in-out infinite alternate;
         }
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        @keyframes glowPulse {
+            0% { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(59, 130, 246, 0.2), 0 0 60px rgba(59, 130, 246, 0.3); }
+            100% { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(59, 130, 246, 0.4), 0 0 80px rgba(59, 130, 246, 0.5); }
         }
-        .tracking-widget {
-            height: 600px;
-            width: 100%;
+
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tracking-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 18px 24px;
+            font-size: 1.1rem;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tracking-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .track-btn {
+            padding: 18px 32px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
             border: none;
-            border-radius: 12px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+            white-space: nowrap;
+        }
+
+        .track-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(59, 130, 246, 0.6);
+        }
+
+        .track-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .results-container {
+            min-height: 400px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            display: none;
+        }
+
+        .results-container.show {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 1.2rem;
+            color: #3b82f6;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(59, 130, 246, 0.3);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 25px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            margin-top: auto;
+        }
+
+        .footer span {
+            background: linear-gradient(135deg, #3b82f6 0%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .header {
+                padding: 25px 20px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 30px 20px;
+            }
+            
+            .input-section {
+                flex-direction: column;
+            }
+            
+            .tracking-input {
+                min-width: auto;
+            }
+            
+            .track-btn {
+                width: 100%;
+            }
+        }
+
+        #tracking-widget {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            border-radius: 16px;
+            overflow: hidden;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen text-white overflow-x-hidden">
-
-    <!-- Hero Section -->
-    <section class="min-h-screen flex items-center justify-center px-4 py-20">
-        <div class="max-w-4xl w-full mx-auto text-center">
-            <!-- Logo Header -->
-            <div class="mb-12">
-                <div class="inline-flex items-center bg-white/10 backdrop-blur-xl rounded-3xl px-8 py-4 border border-white/20">
-                    <i class="fas fa-shipping-fast text-4xl text-cyan-400 mr-4"></i>
-                    <div>
-                        <h1 class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
-                            Smart Tracks
-                        </h1>
-                        <p class="text-lg text-white/80 mt-2 font-medium">Global Shipping Intelligence Platform</p>
-                    </div>
-                </div>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">Smart Tracks</div>
+            <div class="tagline">Professional Shipping Intelligence</div>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <input 
+                    type="text" 
+                    class="tracking-input" 
+                    id="trackingNumber" 
+                    placeholder="Enter BL/Container number (e.g., MAEU123456789, MSKU987654321...)"
+                    maxlength="50"
+                >
+                <button class="track-btn" onclick="trackCargo()">Track Now</button>
             </div>
-
-            <!-- Search Form -->
-            <div class="glass-effect rounded-3xl p-8 md:p-12 shadow-2xl max-w-2xl mx-auto">
-                <div class="space-y-6">
-                    <div>
-                        <h2 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
-                            Track Your Shipment
-                        </h2>
-                        <p class="text-xl text-white/70">Enter your Bill of Lading (BL) number to get real-time updates</p>
-                    </div>
-
-                    <form id="trackingForm" class="space-y-6">
-                        <!-- Carrier Dropdown -->
-                        <div class="relative">
-                            <label class="block text-sm font-semibold text-white/90 mb-3 flex items-center">
-                                <i class="fas fa-building mr-2 text-cyan-400"></i>
-                                Shipping Line
-                            </label>
-                            <select id="carrierSelect" class="w-full px-5 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/60 focus:outline-none focus:ring-4 focus:ring-cyan-500/30 backdrop-blur-xl appearance-none">
-                                <option value="">Select Carrier (Optional)</option>
-                            </select>
-                            <i class="fas fa-chevron-down absolute right-5 top-14 text-xl text-white/60 pointer-events-none"></i>
-                        </div>
-
-                        <!-- Tracking Number -->
-                        <div>
-                            <label class="block text-sm font-semibold text-white/90 mb-3 flex items-center">
-                                <i class="fas fa-hashtag mr-2 text-cyan-400"></i>
-                                Bill of Lading Number
-                            </label>
-                            <input 
-                                type="text" 
-                                id="trackingNumber" 
-                                placeholder="e.g., MSCU1234567890" 
-                                class="w-full px-6 py-5 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/60 focus:outline-none focus:ring-4 focus:ring-cyan-500/30 backdrop-blur-xl text-lg font-medium"
-                                required
-                            >
-                        </div>
-
-                        <!-- Track Button -->
-                        <button 
-                            type="submit"
-                            class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-xl font-bold py-6 px-8 rounded-2xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-300 border-0 flex items-center justify-center group"
-                        >
-                            <i class="fas fa-rocket mr-3 group-hover:animate-pulse"></i>
-                            <span>Track Shipment</span>
-                            <i class="fas fa-arrow-right ml-3"></i>
-                        </button>
-                    </form>
-
-                    <!-- Features -->
-                    <div class="grid md:grid-cols-3 gap-6 pt-8 border-t border-white/10">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-green-500/20 rounded-2xl flex items-center justify-center">
-                                <i class="fas fa-bolt text-green-400"></i>
-                            </div>
-                            <span class="text-sm font-medium text-white/80">Real-time Updates</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-blue-500/20 rounded-2xl flex items-center justify-center">
-                                <i class="fas fa-globe text-blue-400"></i>
-                            </div>
-                            <span class="text-sm font-medium text-white/80">200+ Carriers</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-purple-500/20 rounded-2xl flex items-center justify-center">
-                                <i class="fas fa-shield-alt text-purple-400"></i>
-                            </div>
-                            <span class="text-sm font-medium text-white/80">Secure & Private</span>
-                        </div>
-                    </div>
-                </div>
+            
+            <div class="results-container" id="resultsContainer">
+                <div class="loading" id="loadingSpinner">Loading tracking information...</div>
+                <div id="tracking-widget"></div>
             </div>
         </div>
-    </section>
-
-    <!-- Tracking Modal -->
-    <div id="trackingModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 animate-fadeIn">
-        <div class="glass-effect rounded-3xl max-w-6xl max-h-[90vh] w-full overflow-hidden shadow-3xl animate-slideUp">
-            <!-- Modal Header -->
-            <div class="bg-gradient-to-r from-cyan-600 to-blue-700 p-8 flex items-center justify-between">
-                <div class="flex items-center">
-                    <i class="fas fa-shipping-fast text-3xl text-white mr-4"></i>
-                    <div>
-                        <h3 class="text-2xl font-bold text-white">Smart Tracks</h3>
-                        <p class="text-white/80 text-sm">Professional Shipping Intelligence</p>
-                    </div>
-                </div>
-                <button id="closeModal" class="w-12 h-12 bg-white/20 hover:bg-white/30 rounded-2xl flex items-center justify-center text-white text-xl hover:scale-110 transition-all duration-200">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <!-- Modal Body -->
-            <div class="p-8">
-                <!-- Loading State -->
-                <div id="loadingState" class="hidden flex flex-col items-center justify-center py-20 text-center">
-                    <div class="w-20 h-20 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin mb-6"></div>
-                    <h4 class="text-2xl font-bold text-white mb-2">Loading Tracking Data...</h4>
-                    <p class="text-white/70">Connecting to global carrier networks</p>
-                </div>
-
-                <!-- Tracking Info -->
-                <div id="trackingInfo" class="hidden mb-8 p-6 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
-                    <div class="flex flex-wrap items-center gap-4 text-sm">
-                        <div class="flex items-center bg-cyan-500/20 text-cyan-300 px-4 py-2 rounded-xl">
-                            <i class="fas fa-hashtag mr-2"></i>
-                            <span id="displayTrackingNumber"></span>
-                        </div>
-                        <div class="flex items-center bg-blue-500/20 text-blue-300 px-4 py-2 rounded-xl">
-                            <i class="fas fa-building mr-2"></i>
-                            <span id="displayCarrier"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 17Track Widget Container -->
-                <div id="trackingWidgetContainer" class="hidden">
-                    <iframe 
-                        id="trackingWidget" 
-                        class="tracking-widget"
-                        src=""
-                        title="Smart Tracks - Shipment Details"
-                    ></iframe>
-                </div>
-
-                <!-- Error State -->
-                <div id="errorState" class="hidden flex flex-col items-center justify-center py-20 text-center">
-                    <i class="fas fa-exclamation-triangle text-6xl text-yellow-500 mb-6"></i>
-                    <h4 class="text-2xl font-bold text-white mb-2">Tracking Not Available</h4>
-                    <p class="text-white/70 max-w-md mb-8">This tracking number could not be found in our global carrier database. Please verify the number and try again.</p>
-                    <button id="retryButton" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-lg font-bold py-4 px-8 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
-                        <i class="fas fa-redo mr-2"></i>
-                        Try Another Tracking
-                    </button>
-                </div>
-            </div>
+        
+        <div class="footer">
+            Smart <span>Ali</span>
         </div>
     </div>
 
     <script>
-        // Major Shipping Lines (50+ carriers)
-        const carriers = [
-            'Maersk', 'MSC', 'CMA CGM', 'Hapag-Lloyd', 'COSCO', 'Evergreen', 'ONE', 'HMM', 'Yang Ming',
-            'Wan Hai', 'ZIM', 'APL', 'OOCL', 'NYK', 'K Line', 'MOL', 'Hyundai', 'Matson', 'Crowley',
-            'Hapag-Lloyd', 'BW LPG', 'Pacific International Lines', 'KMTC Line', 'RCL', 'Regional Container Lines',
-            'Emirates Shipping Line', 'TS Line', 'Sinokor', 'IRISL', 'UASC', 'ARKAS', 'Borouge', 'BSL',
-            'CNC Line', 'Dimerco', 'Dong Young', 'Global Feeder Shipping', 'Grimaldi', 'Interasia Lines',
-            'Kuehne + Nagel', 'Long Beach Container Terminal', 'MISC', 'Nippon Yusen Kaisha', 'P&O Nedlloyd',
-            'Rickmers', 'SITC', 'Textainer', 'Uti Worldwide', 'Vinalines', 'Wallem', 'X-Press Feeders'
+        // Common carrier prefixes for auto-detection
+        const carrierPrefixes = [
+            'MAEU', 'MSKU', 'MEDU', 'CMDU', 'TLLU', 'HLXU', 'OOLU', 'SEGU', 
+            'APZU', 'WHLC', 'TXGU', 'IPXU', 'EMCU', 'HASU', 'CSNU', 'DRYU',
+            'YMLU', 'KL1U', 'KL2U', 'KL3U', 'KKTU', 'KMCU', 'KMTU', 'KSTU'
         ];
 
-        // Populate carrier dropdown
-        document.addEventListener('DOMContentLoaded', function() {
-            const carrierSelect = document.getElementById('carrierSelect');
-            carriers.forEach(carrier => {
-                const option = document.createElement('option');
-                option.value = carrier;
-                option.textContent = carrier;
-                carrierSelect.appendChild(option);
-            });
+        function detectCarrierPrefix(trackingNumber) {
+            const upper = trackingNumber.toUpperCase();
+            for (const prefix of carrierPrefixes) {
+                if (upper.startsWith(prefix)) {
+                    return prefix;
+                }
+            }
+            return null;
+        }
 
-            // Form submission
-            document.getElementById('trackingForm').addEventListener('submit', startSmartTrack);
-            document.getElementById('closeModal').addEventListener('click', closeModal);
-            document.getElementById('retryButton').addEventListener('click', closeModal);
-        });
+        function validateTrackingNumber(num) {
+            return num && num.trim().length >= 8 && num.trim().length <= 50 && /^[A-Z0-9]{8,50}$/i.test(num.trim());
+        }
 
-        function startSmartTrack(e) {
-            e.preventDefault();
+        function trackCargo() {
+            const trackingInput = document.getElementById('trackingNumber');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const trackingWidget = document.getElementById('tracking-widget');
             
-            const trackingNumber = document.getElementById('trackingNumber').value.trim();
-            const carrier = document.getElementById('carrierSelect').value;
+            const trackingNumber = trackingInput.value.trim();
             
-            if (!trackingNumber) {
-                alert('Please enter a tracking number');
+            if (!validateTrackingNumber(trackingNumber)) {
+                alert('Please enter a valid BL/Container number (8-50 alphanumeric characters)');
+                trackingInput.focus();
                 return;
             }
-
-            // Show modal
-            openModal();
             
-            // Display tracking info
-            document.getElementById('displayTrackingNumber').textContent = trackingNumber;
-            document.getElementById('displayCarrier').textContent = carrier || 'Auto-detect';
-            document.getElementById('trackingInfo').classList.remove('hidden');
-
-            // Show loading
-            showLoading();
-
-            // Load 17Track widget
-            load17TrackWidget(trackingNumber, carrier);
-        }
-
-        function openModal() {
-            document.getElementById('trackingModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal() {
-            document.getElementById('trackingModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
+            // Show results container and loading
+            resultsContainer.classList.add('show');
+            loadingSpinner.style.display = 'block';
+            trackingWidget.style.display = 'none';
             
-            // Reset states
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('trackingInfo').classList.add('hidden');
-            document.getElementById('trackingWidgetContainer').classList.add('hidden');
-            document.getElementById('errorState').classList.add('hidden');
-            document.getElementById('trackingWidget').src = '';
-            document.getElementById('trackingForm').reset();
-        }
-
-        function showLoading() {
-            document.getElementById('loadingState').classList.remove('hidden');
-            document.getElementById('trackingWidgetContainer').classList.add('hidden');
-            document.getElementById('errorState').classList.add('hidden');
-        }
-
-        function showWidget() {
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('trackingWidgetContainer').classList.remove('hidden');
-        }
-
-        function showError() {
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('errorState').classList.remove('hidden');
-        }
-
-        function load17TrackWidget(trackingNumber, carrier) {
-            // 17Track widget URL with Smart Tracks branding
-            const widgetUrl = `https://www.17track.net/en/widgets?func=track&nums=${encodeURIComponent(trackingNumber)}&platform=web&lang=en`;
-            
-            const iframe = document.getElementById('trackingWidget');
-            iframe.src = widgetUrl;
-            
-            // Handle iframe load
-            iframe.onload = function() {
-                showWidget();
-            };
-            
-            iframe.onerror = function() {
-                showError();
-            };
-
-            // Fallback timeout
+            // Small delay to show loading animation
             setTimeout(() => {
-                if (document.getElementById('loadingState').classList.contains('flex')) {
-                    showError();
+                try {
+                    // Load 17TRACK widget
+                    YQV5.trackSingle({
+                        nums: [trackingNumber],
+                        callback: function(data) {
+                            loadingSpinner.style.display = 'none';
+                            trackingWidget.style.display = 'block';
+                        },
+                        lang: 'en',
+                        height: '100%'
+                    }, 'tracking-widget');
+                } catch (error) {
+                    loadingSpinner.textContent = 'Error loading tracking data. Please try again.';
+                    console.error('Tracking error:', error);
                 }
-            }, 10000);
+            }, 800);
         }
 
-        // Close modal on escape key or outside click
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
+        // Allow Enter key to trigger tracking
+        document.getElementById('trackingNumber').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                trackCargo();
             }
         });
 
-        document.getElementById('trackingModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
+        // Auto-format input (uppercase)
+        document.getElementById('trackingNumber').addEventListener('input', function(e) {
+            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
         });
 
-        // Custom animations
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-            @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-            .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
-            .animate-slideUp { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        `;
-        document.head.appendChild(style);
+        // Add some example numbers as placeholder hint
+        document.getElementById('trackingNumber').placeholder = 
+            carrierPrefixes.slice(0, 3).map(p => `${p}123456789`).join(', ') + '...';
     </script>
 </body>
 </html>
